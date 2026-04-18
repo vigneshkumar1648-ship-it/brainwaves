@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BrainWave — CBSE AI Learning</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #060810;
+      --surface: #0d1117;
+      --card: #111827;
+      --border: #1f2937;
+      --accent1: #00f5c4;
+      --accent2: #7c6bff;
+      --accent3: #ff6b6b;
+      --accent4: #ffd93d;
+      --text: #f0f4ff;
+      --muted: #6b7280;
+      --glow1: rgba(0,245,196,0.15);
+      --glow2: rgba(124,107,255,0.15);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Animated background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: 
+        radial-gradient(ellipse at 20% 20%, rgba(0,245,196,0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(124,107,255,0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(255,107,107,0.03) 0%, transparent 50%);
+      animation: bgShift 15s ease-in-out infinite alternate;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes bgShift {
+      0% { transform: translate(0,0) rotate(0deg); }
+      100% { transform: translate(2%,2%) rotate(2deg); }
+    }
+
+    /* Grid overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px;
+      background: rgba(6,8,16,0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 22px;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-dot {
+      width: 10px; height: 10px;
+      background: var(--accent1);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--accent1);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 0.7; }
+    }
+
+    .logo span { color: var(--accent1); }
+
+    .nav-badge {
+      background: linear-gradient(135deg, var(--accent1), var(--accent2));
+      color: #000;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* ── MAIN CONTAINER ── */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 100px 20px 40px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      padding: 60px 20px 50px;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0,245,196,0.1);
+      border: 1px solid rgba(0,245,196,0.3);
+      color: var(--accent1);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 28px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(36px, 6vw, 64px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -2px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 .line2 {
+      background: linear-gradient(135deg, var(--accent1) 0%, var(--accent2) 50%, var(--accent3) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 16px;
+      max-width: 480px;
+      margin: 0 auto 40px;
+      line-height: 1.6;
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--accent1);
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ── CARDS / SECTIONS ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent1), transparent);
+      opacity: 0.5;
+    }
+
+    .card-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .icon-green { background: rgba(0,245,196,0.1); }
+    .icon-purple { background: rgba(124,107,255,0.1); }
+    .icon-red { background: rgba(255,107,107,0.1); }
+    .icon-yellow { background: rgba(255,217,61,0.1); }
+
+    /* ── INPUTS ── */
+    input, select {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s;
+      width: 100%;
+      margin-bottom: 12px;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent1);
+      box-shadow: 0 0 0 3px rgba(0,245,196,0.1);
+    }
+
+    select option { background: var(--surface); }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent1), #00c9a0);
+      color: #000;
+      font-weight: 700;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,245,196,0.3);
+    }
+
+    .btn-secondary {
+      background: rgba(124,107,255,0.15);
+      color: var(--accent2);
+      border: 1px solid rgba(124,107,255,0.3);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(124,107,255,0.25);
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: rgba(255,107,107,0.15);
+      color: var(--accent3);
+      border: 1px solid rgba(255,107,107,0.3);
+    }
+
+    .btn-danger:hover { background: rgba(255,107,107,0.25); }
+
+    .btn-yellow {
+      background: rgba(255,217,61,0.15);
+      color: var(--accent4);
+      border: 1px solid rgba(255,217,61,0.3);
+    }
+
+    .btn-yellow:hover { background: rgba(255,217,61,0.25); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover { border-color: var(--accent1); color: var(--accent1); }
+
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    /* ── AUTH TABS ── */
+    .tab-row {
+      display: flex;
+      gap: 4px;
+      background: var(--surface);
+      padding: 4px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      border-radius: 9px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+      color: var(--muted);
+    }
+
+    .tab.active {
+      background: var(--card);
+      color: var(--accent1);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    /* ── PROGRESS BAR ── */
+    .progress-wrap {
+      background: var(--surface);
+      border-radius: 20px;
+      height: 8px;
+      overflow: hidden;
+      margin: 8px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      border-radius: 20px;
+      transition: width 0.5s ease;
+    }
+
+    /* ── OUTPUT ── */
+    .output-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 16px;
+      white-space: pre-wrap;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #d1d5db;
+      min-height: 60px;
+      display: none;
+    }
+
+    .output-box.visible { display: block; }
+
+    /* ── LOADING ── */
+    .loading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--accent1);
+      font-size: 14px;
+      margin-top: 16px;
+    }
+
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2px solid rgba(0,245,196,0.2);
+      border-top-color: var(--accent1);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── POINTS BADGE ── */
+    .points-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,217,61,0.1);
+      border: 1px solid rgba(255,217,61,0.3);
+      color: var(--accent4);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* ── CERT ── */
+    .cert-box {
+      background: linear-gradient(135deg, rgba(0,245,196,0.05), rgba(124,107,255,0.05));
+      border: 1px solid rgba(0,245,196,0.3);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      margin-top: 12px;
+      display: none;
+    }
+
+    .cert-box.visible { display: block; }
+
+    /* ── COURSE CARDS ── */
+    .course-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .course-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .course-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent2);
+    }
+
+    .course-card iframe { width: 100%; height: 160px; display: block; border: none; }
+
+    .course-card-title {
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* ── HIDDEN ── */
+    .hidden { display: none !important; }
+
+    /* ── GREETING ── */
+    .greeting {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .username-display {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--accent1);
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0;
+    }
+
+    /* ── SELECT ROW ── */
+    .select-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .select-row { grid-template-columns: 1fr 1fr; }
+      .input-row { grid-template-columns: 1fr; }
+      .navbar { padding: 12px 16px; }
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--card);
+      border: 1px solid var(--accent1);
+      color: var(--accent1);
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      z-index: 999;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s;
+      box-shadow: 0 8px 30px rgba(0,245,196,0.2);
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* ── AI CHAT ── */
+    .chat-messages {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .chat-msg {
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 85%;
+      animation: fadeUp 0.3s ease;
+    }
+
+    .chat-msg.user {
+      background: rgba(0,245,196,0.1);
+      border: 1px solid rgba(0,245,196,0.2);
+      color: var(--accent1);
+      align-self: flex-end;
+    }
+
+    .chat-msg.ai {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: #d1d5db;
+      align-self: flex-start;
+    }
+
+    .chat-input-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .chat-input-row input { margin-bottom: 0; flex: 1; }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="logo">
+    <div class="logo-dot"></div>
+    Brain<span>Wave</span>
+  </div>
+  <div class="nav-badge">CBSE AI Platform</div>
+</nav>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero" id="heroSection">
+    <div class="hero-tag">⚡ Powered by Groq AI</div>
+    <h1>
+      Learn Smarter.<br>
+      <span class="line2">Score Higher.</span>
+    </h1>
+    <p>AI-powered CBSE notes, quizzes & personal tutoring for Class 10 & 12 — completely free.</p>
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-num">2</div>
+        <div class="stat-label">Classes</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">9</div>
+        <div class="stat-label">Subjects</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">100+</div>
+        <div class="stat-label">Chapters</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">24/7</div>
+        <div class="stat-label">AI Tutor</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTH -->
+  <div class="card" id="authCard" style="max-width:460px; margin: 0 auto 20px;">
+    <div class="tab-row">
+      <div class="tab active" onclick="switchTab('login')">Login</div>
+      <div class="tab" onclick="switchTab('register')">Register</div>
+    </div>
+    <input id="name" placeholder="Your name" autocomplete="off">
+    <input id="pass" type="password" placeholder="Password">
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="login()" id="loginBtn">→ Login</button>
+      <button class="btn btn-ghost hidden" onclick="register()" id="registerBtn">Create Account</button>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard" class="hidden">
+
+    <!-- Top row -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+      <div>
+        <div class="greeting">Welcome back,</div>
+        <div class="username-display" id="usernameDisplay">Student</div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <div class="points-badge">⭐ <span id="points">0</span> pts</div>
+        <button class="btn btn-ghost" onclick="logout()" style="padding:8px 16px; font-size:13px;">Logout</button>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="card">
+      <div class="card-title">
+        <div class="card-icon icon-green">📊</div>
+        My Progress
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+        <span style="font-size:14px; color:var(--muted);">Chapters Studied</span>
+        <span style="font-size:14px; color:var(--accent1); font-weight:600;" id="progressText">0 chapters</span>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-fill" id="progressBar" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- Notes Section -->
+    <div class="card">
+      <div class="card-title">
+        <div class="card-icon icon-purple">📚</div>
+        CBSE Smart Notes
+      </div>
+      <div class="select-row">
+        <select id="class" onchange="loadSubjects()">
+          <option value="">Class</option>
+          <option value="10">Class 10</option>
+          <option value="12">Class 12</option>
+        </select>
+        <select id="subject" onchange="loadChapters()">
+          <option value="">Subject</option>
+        </select>
+        <select id="chapter">
+          <option value="">Chapter</option>
+        </select>
+        <select id="lang">
+          <option value="English">English</option>
+          <option value="Tamil">Tamil</option>
+          <option value="Hindi">Hindi</option>
+        </select>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="getNotes()">📄 Generate Notes</button>
+        <button class="btn btn-secondary" onclick="getQuiz()">🎯 Take Quiz</button>
+        <button class="btn btn-yellow" onclick="getNext()">⏭ Next Chapter</button>
+        <button class="btn btn-danger" onclick="completeCourse()">🏆 Get Certificate</button>
+      </div>
+      <div class="loading hidden" id="notesLoading">
+        <div class="spinner"></div> AI is generating your notes...
+      </div>
+      <div class="output-box" id="output"></div>
+      <div class="output-box" id="quiz"></div>
+      <div style="margin-top:10px; font-size:14px; color:var(--accent2);" id="next"></div>
+      <div class="cert-box" id="cert"></div>
+    </div>
+
+    <!-- AI Tutor -->
+    <div class="card">
+      <div class="card-title">
+        <div class="card-icon icon-green">🤖</div>
+        AI Personal Tutor
+      </div>
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-input-row">
+        <input id="question" placeholder="Ask any doubt..." onkeydown="if(event.key==='Enter') askAI()">
+        <button class="btn btn-primary" onclick="askAI()">Ask →</button>
+      </div>
+    </div>
+
+    <!-- Exam Mode -->
+    <div class="card">
+      <div class="card-title">
+        <div class="card-icon icon-red">🎯</div>
+        Exam Mode
+      </div>
+      <p style="color:var(--muted); font-size:14px; margin-bottom:16px;">Generate a full CBSE-style board exam paper with sections A, B, C, D</p>
+      <button class="btn btn-danger" onclick="getExam()">Generate Sample Paper</button>
+      <div class="loading hidden" id="examLoading">
+        <div class="spinner"></div> Generating exam paper...
+      </div>
+      <div class="output-box" id="exam"></div>
+    </div>
+
+    <!-- Video Courses -->
+    <div class="card">
+      <div class="card-title">
+        <div class="card-icon icon-yellow">🎬</div>
+        Video Courses
+      </div>
+      <button class="btn btn-yellow" onclick="loadCourses()">Load Courses</button>
+      <div class="course-grid" id="courses"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let currentUser = "";
+let fullSyllabus = {};
+let points = 0;
+
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 3000);
+}
+
+function switchTab(tab) {
+  document.querySelectorAll(".tab").forEach((t,i) => t.classList.toggle("active", (tab==="login"&&i===0)||(tab==="register"&&i===1)));
+  document.getElementById("loginBtn").classList.toggle("hidden", tab==="register");
+  document.getElementById("registerBtn").classList.toggle("hidden", tab==="login");
+}
+
+async function register() {
+  const name = document.getElementById("name").value.trim();
+  const password = document.getElementById("pass").value;
+  if (!name || !password) return showToast("Please fill all fields");
+  const res = await fetch("http://localhost:3000/register", {
+    method: "POST", headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ name, password })
+  });
+  const data = await res.json();
+  showToast(data.message);
+  if (data.message === "Registered successfully") switchTab("login");
+}
+
+async function login() {
+  const name = document.getElementById("name").value.trim();
+  const password = document.getElementById("pass").value;
+  if (!name || !password) return showToast("Please fill all fields");
+  const res = await fetch("http://localhost:3000/login", {
+    method: "POST", headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ name, password })
+  });
+  if (res.status !== 200) { showToast("Invalid credentials"); return; }
+  currentUser = name;
+  document.getElementById("authCard").classList.add("hidden");
+  document.getElementById("heroSection").classList.add("hidden");
+  document.getElementById("dashboard").classList.remove("hidden");
+  document.getElementById("usernameDisplay").textContent = name;
+  loadProgress();
+  const syl = await fetch("http://localhost:3000/syllabus");
+  fullSyllabus = await syl.json();
+  showToast("Welcome back, " + name + "! 👋");
+}
+
+function logout() {
+  currentUser = "";
+  document.getElementById("authCard").classList.remove("hidden");
+  document.getElementById("heroSection").classList.remove("hidden");
+  document.getElementById("dashboard").classList.add("hidden");
+  document.getElementById("name").value = "";
+  document.getElementById("pass").value = "";
+}
+
+async function loadCourses() {
+  const res = await fetch("http://localhost:3000/courses");
+  const data = await res.json();
+  const div = document.getElementById("courses");
+  div.innerHTML = data.length === 0 ? '<p style="color:var(--muted); font-size:14px; margin-top:12px;">No courses added yet. Use admin panel to add courses.</p>' : "";
+  data.forEach(c => {
+    div.innerHTML += `<div class="course-card"><iframe src="${c.video}" allowfullscreen></iframe><div class="course-card-title">${c.title}</div></div>`;
+  });
+}
+
+function loadSubjects() {
+  const cls = document.getElementById("class").value;
+  if (!cls) return;
+  const subjects = Object.keys(fullSyllabus[cls] || {});
+  const sel = document.getElementById("subject");
+  sel.innerHTML = '<option value="">Subject</option>' + subjects.map(s => `<option>${s}</option>`).join("");
+  document.getElementById("chapter").innerHTML = '<option value="">Chapter</option>';
+}
+
+function loadChapters() {
+  const cls = document.getElementById("class").value;
+  const sub = document.getElementById("subject").value;
+  const chapters = (fullSyllabus[cls] || {})[sub] || [];
+  const sel = document.getElementById("chapter");
+  sel.innerHTML = '<option value="">Chapter</option>' + chapters.map(c => `<option>${c}</option>`).join("");
+}
+
+async function getNotes() {
+  const className = document.getElementById("class").value;
+  const subject = document.getElementById("subject").value;
+  const chapter = document.getElementById("chapter").value;
+  if (!className || !subject || !chapter) return showToast("Please select class, subject and chapter");
+  document.getElementById("notesLoading").classList.remove("hidden");
+  document.getElementById("output").classList.remove("visible");
+  document.getElementById("quiz").classList.remove("visible");
+  const res = await fetch("http://localhost:3000/generate-notes", {
+    method: "POST", headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ className, subject, chapter })
+  });
+  const data = await res.json();
+  document.getElementById("notesLoading").classList.add("hidden");
+  document.getElementById("output").textContent = data.notes;
+  document.getElementById("output").classList.add("visible");
+  await fetch("http://localhost:3000/study", {
+    method: "POST", headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ user: currentUser, chapter })
+  });
+  addPoints(10);
+  loadProgress();
+  showToast("Notes generated! +10 pts ⭐");
+}
+
+async function getQuiz() {
+  const className = document.getElementById("class").value;
+  const subject = document.getElementById("subject").value;
+  const chapter = document.getElementById("chapter").value;
+  if (!className || !subject || !chapter) return showToast("Please select class, subject and chapter");
+  document.getElementById("quiz").textContent = "Generating quiz...";
+  document.getElementById("quiz").classList.add("visible");
+  const res = await fetch("http://localhost:3000/quiz", {
+    method: "POST", headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ className, subject, chapter })
+  });
+  const data = await res.json();
+  document.getElementById("quiz").textContent = data.quiz;
+  addPoints(5);
+  showToast("Quiz ready! +5 pts ⭐");
+}
+
+async function getNext() {
+  const className = document.getElementById("class").value;
+  const subject = document.getElementById("subject").value;
+  if (!className || !subject) return showToast("Please select class and subject");
+  const res = await fetch("http://localhost:3000/recommend", {
+    method: "POST", headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ user: currentUser, className, subject })
+  });
+  const data = await res.json();
+  document.getElementById("next").textContent = "📌 Next recommended: " + data.next;
+}
+
+async function completeCourse() {
+  const course = document.getElementById("chapter").value;
+  if (!course) return showToast("Please select a chapter first");
+  const res = await fetch("http://localhost:3000/complete-course", {
+    method: "POST", headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ user: currentUser, course })
+  });
+  const data = await res.json();
+  const certEl = document.getElementById("cert");
+  certEl.innerHTML = `<div style="font-size:28px; margin-bottom:8px;">🏆</div><div style="font-family:'Syne',sans-serif; font-size:16px; font-weight:700; color:var(--accent1); margin-bottom:4px;">Certificate of Completion</div><div style="font-size:14px; color:var(--muted);">${data.certificate}</div>`;
+  certEl.classList.add("visible");
+  addPoints(50);
+  showToast("Certificate earned! +50 pts 🏆");
+}
+
+async function askAI() {
+  const question = document.getElementById("question").value.trim();
+  const lang = document.getElementById("lang").value;
+  if (!question) return;
+  const chatEl = document.getElementById("chatMessages");
+  chatEl.innerHTML += `<div class="chat-msg user">${question}</div>`;
+  document.getElementById("question").value = "";
+  chatEl.innerHTML += `<div class="chat-msg ai" id="thinkingMsg">⚡ Thinking...</div>`;
+  chatEl.scrollTop = chatEl.scrollHeight;
+  const res = await fetch("http://localhost:3000/ask-ai", {
+    method: "POST", headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ user: currentUser, question, lang })
+  });
+  const data = await res.json();
+  document.getElementById("thinkingMsg").remove();
+  chatEl.innerHTML += `<div class="chat-msg ai">${data.answer}</div>`;
+  chatEl.scrollTop = chatEl.scrollHeight;
+  addPoints(5);
+}
+
+async function getExam() {
+  const className = document.getElementById("class").value || "10";
+  document.getElementById("examLoading").classList.remove("hidden");
+  document.getElementById("exam").classList.remove("visible");
+  const res = await fetch("http://localhost:3000/exam", {
+    method: "POST", headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ className })
+  });
+  const data = await res.json();
+  document.getElementById("examLoading").classList.add("hidden");
+  document.getElementById("exam").textContent = data.paper;
+  document.getElementById("exam").classList.add("visible");
+  showToast("Exam paper ready! 🎯");
+}
+
+async function loadProgress() {
+  const res = await fetch(`http://localhost:3000/progress/${currentUser}`);
+  const data = await res.json();
+  document.getElementById("progressText").textContent = data.total + " chapters studied";
+  const pct = Math.min(data.total * 2, 100);
+  document.getElementById("progressBar").style.width = pct + "%";
+}
+
+function addPoints(p) {
+  points += p;
+  document.getElementById("points").textContent = points;
+}
+</script>
+</body>
+</html>
